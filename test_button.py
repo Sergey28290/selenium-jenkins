@@ -11,7 +11,6 @@ def browser():
     options = Options()
     options.add_argument('--headless')
     service = Service(ChromeDriverManager(driver_version="114.0.5735.90").install())
-    # driver = webdriver.Chrome(executable_path=ChromeDriverManager(driver_version="114.0.5735.90").install(), options= options)
     driver = webdriver.Chrome(service=service, options=options)
     driver.maximize_window()
     yield driver
