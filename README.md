@@ -9,12 +9,18 @@
 1.1. выберите Freestyle project
 
 2. перейдите в раздел Source code management
-![alt text](image.png)
 
-3. выберите Git, заполняем Repository URL, после этого примените изменения 
-![alt text](image-1.png)
+   
+![image (1)](https://github.com/user-attachments/assets/59892b6c-4921-4aea-a974-4a192a3d18f4)
 
-4. в разделе "Build" выберите "Add build step" и выберите "Execute Windows batch command". вставляете следующее:
+
+4. выберите Git, заполняем Repository URL, после этого примените изменения
+
+   
+![image-1](https://github.com/user-attachments/assets/11616d40-883a-4749-8a07-01eca0b08d32)
+
+
+6. в разделе "Build" выберите "Add build step" и выберите "Execute Windows batch command". вставляете следующее:
 ```
 python -m venv venv
 
@@ -31,6 +37,7 @@ pytest
 
 решение:
 1. переходите на дэшборд jenkins, клик на manage jenkins, далее system -> global properties (если не можете найти - используйте f3 для быстрого поиска по странице):
-![alt text](image-3.png)
+![image-3](https://github.com/user-attachments/assets/0cd5b9b4-e7e2-4f15-a4f6-71ff811f4d03)
+
 
 2. готово!
