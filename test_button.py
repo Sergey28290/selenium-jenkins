@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.service import Service
 def browser():
     options = Options()
     options.add_argument('--headless')
+    options.binary_location = "C:/Chrome114/UserData/Application/chrome.exe"
     service = Service(ChromeDriverManager(driver_version="114.0.5735.90").install())
     driver = webdriver.Chrome(service=service, options=options)
     driver.maximize_window()
