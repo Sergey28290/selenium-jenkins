@@ -41,7 +41,7 @@ pytest
    
 ![image-3](https://github.com/user-attachments/assets/0cd5b9b4-e7e2-4f15-a4f6-71ff811f4d03)
 
-## ОБРАТИТЕ ВНИМАНИЕ! список путей слитно через точку с запятой, типа `C:\Users\norma\AppData\Local\Programs\Python\Python312\;C:\Users\norma\AppData\Local\Programs\Python\Python312\Scripts\`
+### ОБРАТИТЕ ВНИМАНИЕ! список путей слитно через точку с запятой, типа `C:\Users\norma\AppData\Local\Programs\Python\Python312\;C:\Users\norma\AppData\Local\Programs\Python\Python312\Scripts\`
 
 
-3. готово!
+2. готово!
