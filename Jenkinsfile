@@ -77,8 +77,7 @@ pipeline {
                     body: emailTemplate,
                     to: recipients,
                     mimeType: 'text/html',
-                    attachmentsPattern: 'allure-report.zip',
-                    from: 'MS_0eccQb@trial-v69oxl5rprdg785k.mlsender.net'
+                    attachmentsPattern: 'allure-report.zip'
                 )
             }
         }
