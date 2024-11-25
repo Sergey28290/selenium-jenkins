@@ -76,7 +76,8 @@ pipeline {
                     subject: "Результаты тестов для сборки ${currentBuild.number}",
                     body: emailTemplate,
                     to: recipients,
-                    attachmentsPattern: 'allure-report.zip'
+                    attachmentsPattern: 'allure-report.zip',
+                    from: 'normalnyyadres@gmail.com'
                 )
             }
         }
