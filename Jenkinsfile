@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        CHROMEDRIVER_PATH = "${WORKSPACE}\\chromedriver"
+    }
+
     stages {
         stage('Setup') {
             steps {
@@ -8,7 +12,7 @@ pipeline {
                     bat 'python -m venv venv'
                     bat 'call venv\\Scripts\\activate'
                     bat 'pip install -r requirements.txt'
-                    bat 'set PATH=%PATH%;%WORKSPACE%\\chromedriver'
+                    bat "set PATH=%PATH%;${CHROMEDRIVER_PATH}"
                 }
             }
         }
@@ -23,7 +27,7 @@ pipeline {
             steps {
                 script {
                     bat 'allure generate allure-results -o allure-report'
-                    bat 'powershell Compress-Archive -Path allure-report -DestinationPath allure-report.zip'
+                    powershell 'Compress-Archive -Path allure-report -DestinationPath allure-report.zip'
                 }
             }
         }
@@ -31,24 +35,38 @@ pipeline {
     post {
         always {
             script {
+                def testResult = currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class)
+                def allTests = testResult.getTotalCount()
+                def failedTests = testResult.getFailCount()
+                def skippedTests = testResult.getSkipCount()
+                def passedTests = allTests - failedTests - skippedTests
+
+                def failedTestCases = testResult.getFailedTests()
+                def failedTestSummary = failedTestCases.collect { testCase ->
+                    "${testCase.getFullName()}"
+                }.join("\n")
+
+                def allureReportPath = "${WORKSPACE}\\allure-report.zip"
+
                 emailext(
-                    subject: "Результаты тестов для ${currentBuild.number}",
+                    subject: "Test Results for ${currentBuild.number}",
                     body: """
                         <html>
                         <body>
-                          <h1>Результаты тестов для билда ${currentBuild.number}</h1>
-                          <p>Всего тестов: ${currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class).getTotalCount()}</p>
-                          <p>Пройденные тесты: ${currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class).getTotalCount() - currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class).getFailCount() - currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class).getSkipCount()}</p>
-                          <p>Проваленные тесты: ${currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class).getFailCount()}</p>
-                          <p>Пропущенные тесты: ${currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class).getSkipCount()}</p>
-                          <h2>Саммари по проваленным:</h2>
-                          <pre>${currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class).getFailedTests().collect { testCase -> "${testCase.getFullName()}" }.join("\n")}</pre>
-                          <h2>Отчет Allure:</h2>
-                          <p><a href="${currentBuild.rawBuild.getWorkspace().child("allure-report.zip").getRemote()}">Скачать Allure отчет</a></p>
+                          <h1>Test Results for Build ${currentBuild.number}</h1>
+                          <p>Total Tests: ${allTests}</p>
+                          <p>Passed Tests: ${passedTests}</p>
+                          <p>Failed Tests: ${failedTests}</p>
+                          <p>Skipped Tests: ${skippedTests}</p>
+                          <h2>Failed Test Summary:</h2>
+                          <pre>${failedTestSummary}</pre>
+                          <h2>Allure Report:</h2>
+                          <p><a href="${allureReportPath}">Download Allure Report</a></p>
                         </body>
                         </html>
                     """,
-                    attachmentsPattern: '**/allure-report.zip'
+                    to: 'your-email@example.com',  // Укажите ваш email
+                    attachments: allureReportPath
                 )
             }
         }
