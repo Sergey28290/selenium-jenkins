@@ -20,7 +20,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    bat 'pytest --alluredir=allure-results'
+                    bat 'pytest --alluredir=allure-results --junitxml=test-reports/report.xml'
                 }
                 junit 'test-reports/report.xml'
                 script {
