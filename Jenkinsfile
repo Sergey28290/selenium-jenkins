@@ -3,23 +3,24 @@ pipeline {
 
     environment {
         CHROMEDRIVER_PATH = "${WORKSPACE}\\chromedriver"
+        PATH = "C:\\WINDOWS\\SYSTEM32;${env.PATH}"
     }
 
     stages {
         stage('Setup') {
             steps {
                 script {
-                    powershell.exe 'python -m venv venv'
-                    powershell.exe '.\\venv\\Scripts\\Activate.ps1'
-                    powershell.exe 'pip install -r requirements.txt'
-                    powershell.exe "\$env:PATH += \";${CHROMEDRIVER_PATH}\""
+                    bat 'python -m venv venv'
+                    bat 'call venv\\Scripts\\activate'
+                    bat 'pip install -r requirements.txt'
+                    bat "set PATH=%PATH%;${CHROMEDRIVER_PATH}"
                 }
             }
         }
         stage('Test') {
             steps {
                 script {
-                    powershell.exe 'pytest --junitxml=test-reports/report.xml'
+                    bat 'pytest --junitxml=test-reports/report.xml'
                 }
                 junit 'test-reports/report.xml'
             }
@@ -27,8 +28,8 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    powershell.exe 'allure generate allure-results -o allure-report'
-                    powershell.exe 'Compress-Archive -Path allure-report -DestinationPath allure-report.zip'
+                    bat 'allure generate allure-results -o allure-report'
+                    powershell 'Compress-Archive -Path allure-report -DestinationPath allure-report.zip'
                 }
             }
         }
