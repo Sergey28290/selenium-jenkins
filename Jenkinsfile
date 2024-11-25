@@ -52,10 +52,15 @@ pipeline {
             }
         }
     }
+
     post {
         always {
             script {
                 def allureReportPath = "${WORKSPACE}\\allure-report.zip"
+                def config = readJSON file: 'recipients.json'
+                
+                def recipients = config.recipients.join(',')
+
                 def emailTemplate = readFile('email-template.html')
 
                 emailTemplate = emailTemplate
@@ -68,9 +73,9 @@ pipeline {
                     .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
 
                 emailext(
-                    subject: "Результаты тестов для ${currentBuild.number}",
+                    subject: "Результаты тестов для сборки ${currentBuild.number}",
                     body: emailTemplate,
-                    to: 'equqee@gmail.com',
+                    to: recipients,
                     attachmentsPattern: 'allure-report.zip'
                 )
             }
