@@ -19,8 +19,9 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    bat 'pytest'
+                    bat 'pytest --junitxml=test-reports/report.xml'
                 }
+                junit 'test-reports/report.xml'
             }
         }
         stage('Generate Allure Report') {
@@ -36,38 +37,42 @@ pipeline {
         always {
             script {
                 def testResult = currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class)
-                def allTests = testResult.getTotalCount()
-                def failedTests = testResult.getFailCount()
-                def skippedTests = testResult.getSkipCount()
-                def passedTests = allTests - failedTests - skippedTests
+                if (testResult) {
+                    def allTests = testResult.getTotalCount()
+                    def failedTests = testResult.getFailCount()
+                    def skippedTests = testResult.getSkipCount()
+                    def passedTests = allTests - failedTests - skippedTests
 
-                def failedTestCases = testResult.getFailedTests()
-                def failedTestSummary = failedTestCases.collect { testCase ->
-                    "${testCase.getFullName()}"
-                }.join("\n")
+                    def failedTestCases = testResult.getFailedTests()
+                    def failedTestSummary = failedTestCases.collect { testCase ->
+                        "${testCase.getFullName()}"
+                    }.join("\n")
 
-                def allureReportPath = "${WORKSPACE}\\allure-report.zip"
+                    def allureReportPath = "${WORKSPACE}\\allure-report.zip"
 
-                emailext(
-                    subject: "Test Results for ${currentBuild.number}",
-                    body: """
-                        <html>
-                        <body>
-                          <h1>Test Results for Build ${currentBuild.number}</h1>
-                          <p>Total Tests: ${allTests}</p>
-                          <p>Passed Tests: ${passedTests}</p>
-                          <p>Failed Tests: ${failedTests}</p>
-                          <p>Skipped Tests: ${skippedTests}</p>
-                          <h2>Failed Test Summary:</h2>
-                          <pre>${failedTestSummary}</pre>
-                          <h2>Allure Report:</h2>
-                          <p><a href="${allureReportPath}">Download Allure Report</a></p>
-                        </body>
-                        </html>
-                    """,
-                    to: 'your-email@example.com',  // Укажите ваш email
-                    attachments: allureReportPath
-                )
+                    emailext(
+                        subject: "Результаты тестов для ${currentBuild.number}",
+                        body: """
+                            <html>
+                            <body>
+                              <h1>Результаты тестов для билда ${currentBuild.number}</h1>
+                              <p>Всего тестов: ${allTests}</p>
+                              <p>Пройденные тесты: ${passedTests}</p>
+                              <p>Проваленные тесты: ${failedTests}</p>
+                              <p>Пропущенные тесты: ${skippedTests}</p>
+                              <h2>Саммари по проваленным:</h2>
+                              <pre>${failedTestSummary}</pre>
+                              <h2>Отчет Allure:</h2>
+                              <p><a href="${allureReportPath}">Скачать Allure отчет</a></p>
+                            </body>
+                            </html>
+                        """,
+                        to: 'your-email@example.com',
+                        attachments: allureReportPath
+                    )
+                } else {
+                    echo 'No test results found.'
+                }
             }
         }
     }
