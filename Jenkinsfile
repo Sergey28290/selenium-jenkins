@@ -56,6 +56,11 @@ pipeline {
     post {
         always {
             script {
+                def allureReportPath = "${WORKSPACE}\\allure-report"
+                def config = readJSON file: 'recipients.json'
+
+                def recipients = config.recipients.join(',')
+
                 def emailTemplate = readFile('email-template.html')
 
                 emailTemplate = emailTemplate
@@ -66,8 +71,6 @@ pipeline {
                     .replace('${SKIPPED_TESTS}', "${env.SKIPPED_TESTS}")
                     .replace('${FAILED_TEST_SUMMARY}', "${env.FAILED_TEST_SUMMARY}")
                     .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
-
-                echo "Email body: ${emailTemplate}"
 
                 emailext(
                     subject: "Результаты тестов для сборки ${currentBuild.number}",
