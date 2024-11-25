@@ -57,10 +57,9 @@ pipeline {
                     bat 'gdrive account list' //проверка аккаунтов
 
                     bat 'gdrive files upload --parent 1sMmJZTBiXjzrCXedl9Bzdgqk5Xk7V0q4 allure-report.zip' //вот тут поменять айди папки
-                    def fileId = bat(script: 'gdrive files list --query "name=\'allure-report.zip\'" --skip-header', returnStdout: true).trim().split('\\s+')[0]
-                    def fileInfo = bat(script: 'gdrive files info ${fileId}', returnStdout: true).trim()
-                    def link = fileInfo.split('\n').find { it.contains('ViewUrl') }.split(': ')[1]
-                    env.ALLURE_REPORT_LINK = link
+                    echo "Upload Output: ${uploadOutput}"
+                    def viewUrl = uploadOutput.split('\n').find { it.contains('ViewUrl') }.split(': ')[1]
+                    env.ALLURE_REPORT_LINK = viewUrl
                 }
             }
         }
