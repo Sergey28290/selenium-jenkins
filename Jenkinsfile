@@ -59,15 +59,7 @@ pipeline {
                 def allureReportPath = "${WORKSPACE}\\allure-report.zip"
                 def config = readJSON file: 'recipients.json'
                 
-                // Manually build the recipient string
-                def recipients = ''
-                config.recipients.each { recipient ->
-                    if (recipients) {
-                        recipients += ",${recipient}" // Add a comma if it's not the first recipient
-                    } else {
-                        recipients = recipient // Set the first recipient without a comma
-                    }
-                }
+                def recipients = config.recipients.join(',')
 
                 def emailTemplate = readFile('email-template.html')
 
