@@ -20,6 +20,8 @@ https://chromedriver.storage.googleapis.com/index.html?path=114.0.5735.90/
 
 для работы пайплайна нужно будет скачать gdrive и авторизоваться, это достаточно просто: https://github.com/glotlabs/gdrive. документация: https://github.com/glotlabs/gdrive/blob/main/docs/create_google_api_credentials.md
 
+## обратите внимание, чтобы пользователю jenkins была доступна конфигурация gdrive. специально добавлена проверка в шаге загрузки на драйв - gdrive acconut list, если список пуст и билд падает - значит пользователь jenkins не видит конфиг gdrive. проблему можно исправить сменой пользователя jenkins/добавлением аккаунта gdrive от имени пользователя jenkins через powershell
+
 хороший туториал для настройки и проверки gmail smtp: https://www.youtube.com/watch?v=ZfEK3WP73eY
 
 далее Manage Jenkins -> Configure System, раздел Extended E-mail Notification.
