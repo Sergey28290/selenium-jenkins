@@ -62,6 +62,9 @@ pipeline {
                         .replace('${FAILED_TEST_SUMMARY}', "${failedTestSummary}")
                         .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
 
+                    stash name: 'emailTemplate', includes: 'email-template.html'
+                    stash name: 'testResults', includes: 'test-reports/report.xml'
+
                     emailext(
                         subject: "Результаты тестов для ${currentBuild.number}",
                         body: emailTemplate,
