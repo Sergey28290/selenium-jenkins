@@ -1,5 +1,6 @@
 # selenium-jenkins
 ### версия драйвера chromedriver: 114.0.5735.90
+https://chromedriver.storage.googleapis.com/index.html?path=114.0.5735.90/
 
 # деплой
 
