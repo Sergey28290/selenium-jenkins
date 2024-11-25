@@ -54,30 +54,38 @@ pipeline {
     }
 
     post {
-        always {
-            script {
-                def allureReportPath = "${WORKSPACE}\\allure-report.zip"
-                def config = readJSON file: 'recipients.json'
-                def recipients = config.recipients.join(',')
-
-                def emailTemplate = readFile('email-template.html')
-
-                emailTemplate = emailTemplate
-                    .replace('${BUILD_NUMBER}', "${currentBuild.number}")
-                    .replace('${ALL_TESTS}', "${env.ALL_TESTS}")
-                    .replace('${PASSED_TESTS}', "${env.PASSED_TESTS}")
-                    .replace('${FAILED_TESTS}', "${env.FAILED_TESTS}")
-                    .replace('${SKIPPED_TESTS}', "${env.SKIPPED_TESTS}")
-                    .replace('${FAILED_TEST_SUMMARY}', "${env.FAILED_TEST_SUMMARY}")
-                    .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
-
-                emailext(
-                    subject: "Результаты тестов для сборки ${currentBuild.number}",
-                    body: emailTemplate,
-                    to: recipients,
-                    attachmentsPattern: 'allure-report.zip'
-                )
+    always {
+        script {
+            def allureReportPath = "${WORKSPACE}\\allure-report.zip"
+            def config = readJSON file: 'recipients.json'
+            
+            def recipients = ''
+            config.recipients.each { recipient ->
+                if (recipients) {
+                    recipients += ",${recipient}"
+                } else {
+                    recipients = recipient
+                }
             }
+
+            def emailTemplate = readFile('email-template.html')
+
+            emailTemplate = emailTemplate
+                .replace('${BUILD_NUMBER}', "${currentBuild.number}")
+                .replace('${ALL_TESTS}', "${env.ALL_TESTS}")
+                .replace('${PASSED_TESTS}', "${env.PASSED_TESTS}")
+                .replace('${FAILED_TESTS}', "${env.FAILED_TESTS}")
+                .replace('${SKIPPED_TESTS}', "${env.SKIPPED_TESTS}")
+                .replace('${FAILED_TEST_SUMMARY}', "${env.FAILED_TEST_SUMMARY}")
+                .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
+
+            emailext(
+                subject: "Результаты тестов для сборки ${currentBuild.number}",
+                body: emailTemplate,
+                to: recipients,
+                attachmentsPattern: 'allure-report.zip'
+            )
         }
     }
 }
+
