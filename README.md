@@ -18,6 +18,8 @@ https://chromedriver.storage.googleapis.com/index.html?path=114.0.5735.90/
 
 данные(логин, пароль) берем с smtp сервиса, который предоставил доступы. можно использовать brevo, mailtrap ... от себя порекомендую использовать gmail smtp, быстро и просто. не все smtp сервисы дают нормально зарегистрироваться - можно сразу после регистрации по неизвестным причинам влететь под suspend
 
+для работы пайплайна нужно будет скачать gdrive и авторизоваться, это достаточно просто: https://github.com/glotlabs/gdrive. документация: https://github.com/glotlabs/gdrive/blob/main/docs/create_google_api_credentials.md
+
 хороший туториал для настройки и проверки gmail smtp: https://www.youtube.com/watch?v=ZfEK3WP73eY
 
 далее Manage Jenkins -> Configure System, раздел Extended E-mail Notification.

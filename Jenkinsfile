@@ -51,16 +51,22 @@ pipeline {
                 }
             }
         }
+        stage('Upload to Google Drive') {
+            steps {
+                script {
+                    bat 'gdrive upload --parent YOUR_FOLDER_ID allure-report.zip'
+                    def link = bat(script: 'gdrive share allure-report.zip', returnStdout: true).trim()
+                    env.ALLURE_REPORT_LINK = link
+                }
+            }
+        }
     }
 
     post {
         always {
             script {
-                def allureReportPath = "${WORKSPACE}\\allure-report"
                 def config = readJSON file: 'recipients.json'
-
                 def recipients = config.recipients.join(',')
-
                 def emailTemplate = readFile('email-template.html')
 
                 emailTemplate = emailTemplate
@@ -70,14 +76,13 @@ pipeline {
                     .replace('${FAILED_TESTS}', "${env.FAILED_TESTS}")
                     .replace('${SKIPPED_TESTS}', "${env.SKIPPED_TESTS}")
                     .replace('${FAILED_TEST_SUMMARY}', "${env.FAILED_TEST_SUMMARY}")
-                    .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
+                    .replace('${ALLURE_REPORT_LINK}', "${env.ALLURE_REPORT_LINK}")
 
                 emailext(
                     subject: "Результаты тестов для сборки ${currentBuild.number}",
                     body: emailTemplate,
                     to: recipients,
-                    mimeType: 'text/html',
-                    attachmentsPattern: 'allure-report.zip'
+                    mimeType: 'text/html'
                 )
             }
         }
