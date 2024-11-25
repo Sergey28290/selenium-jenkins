@@ -52,16 +52,10 @@ pipeline {
             }
         }
     }
-
     post {
         always {
             script {
                 def allureReportPath = "${WORKSPACE}\\allure-report.zip"
-                def config = readJSON file: 'recipients.json'
-
-                def recipients = config.recipients.join(',')
-                echo "Recipients: ${recipients}"
-
                 def emailTemplate = readFile('email-template.html')
 
                 emailTemplate = emailTemplate
@@ -73,16 +67,13 @@ pipeline {
                     .replace('${FAILED_TEST_SUMMARY}', "${env.FAILED_TEST_SUMMARY}")
                     .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
 
-                echo "Email Template: ${emailTemplate}"
-
                 emailext(
-                    subject: "Результаты тестов для сборки ${currentBuild.number}",
+                    subject: "Результаты тестов для ${currentBuild.number}",
                     body: emailTemplate,
-                    to: recipients,
+                    to: 'equqee@gmail.com',
                     attachmentsPattern: 'allure-report.zip'
                 )
             }
         }
     }
-
 }
