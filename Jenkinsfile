@@ -23,6 +23,24 @@ pipeline {
                     bat 'pytest --junitxml=test-reports/report.xml'
                 }
                 junit 'test-reports/report.xml'
+                script {
+                    def testResult = currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class)
+                    if (testResult) {
+                        env.ALL_TESTS = "${testResult.getTotalCount()}"
+                        env.FAILED_TESTS = "${testResult.getFailCount()}"
+                        env.SKIPPED_TESTS = "${testResult.getSkipCount()}"
+                        env.PASSED_TESTS = "${testResult.getTotalCount() - testResult.getFailCount() - testResult.getSkipCount()}"
+
+                        def failedTestCases = testResult.getFailedTests()
+                        env.FAILED_TEST_SUMMARY = failedTestCases.collect { it.getFullName() }.join("\n")
+                    } else {
+                        env.ALL_TESTS = "0"
+                        env.FAILED_TESTS = "0"
+                        env.SKIPPED_TESTS = "0"
+                        env.PASSED_TESTS = "0"
+                        env.FAILED_TEST_SUMMARY = "No test failures."
+                    }
+                }
             }
         }
         stage('Generate Allure Report') {
@@ -37,43 +55,24 @@ pipeline {
     post {
         always {
             script {
-                def testResult = currentBuild.rawBuild.getAction(hudson.tasks.junit.TestResultAction.class)
-                if (testResult) {
-                    def allTests = testResult.getTotalCount()
-                    def failedTests = testResult.getFailCount()
-                    def skippedTests = testResult.getSkipCount()
-                    def passedTests = allTests - failedTests - skippedTests
+                def allureReportPath = "${WORKSPACE}\\allure-report.zip"
+                def emailTemplate = readFile('email-template.html')
 
-                    def failedTestCases = testResult.getFailedTests()
-                    def failedTestSummary = failedTestCases.collect { testCase ->
-                        "${testCase.getFullName()}"
-                    }.join("\n")
+                emailTemplate = emailTemplate
+                    .replace('${BUILD_NUMBER}', "${currentBuild.number}")
+                    .replace('${ALL_TESTS}', "${env.ALL_TESTS}")
+                    .replace('${PASSED_TESTS}', "${env.PASSED_TESTS}")
+                    .replace('${FAILED_TESTS}', "${env.FAILED_TESTS}")
+                    .replace('${SKIPPED_TESTS}', "${env.SKIPPED_TESTS}")
+                    .replace('${FAILED_TEST_SUMMARY}', "${env.FAILED_TEST_SUMMARY}")
+                    .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
 
-                    def allureReportPath = "${WORKSPACE}\\allure-report.zip"
-
-                    def emailTemplate = readFile('email-template.html')
-
-                    emailTemplate = emailTemplate
-                        .replace('${BUILD_NUMBER}', "${currentBuild.number}")
-                        .replace('${ALL_TESTS}', "${allTests}")
-                        .replace('${PASSED_TESTS}', "${passedTests}")
-                        .replace('${FAILED_TESTS}', "${failedTests}")
-                        .replace('${SKIPPED_TESTS}', "${skippedTests}")
-                        .replace('${FAILED_TEST_SUMMARY}', "${failedTestSummary}")
-                        .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
-
-                    stash name: 'emailTemplate', includes: 'email-template.html'
-                    stash name: 'testResults', includes: 'test-reports/report.xml'
-
-                    emailext(
-                        subject: "Результаты тестов для ${currentBuild.number}",
-                        body: emailTemplate,
-                        to: 'your-email@example.com',
-                        attachmentsPattern: 'allure-report.zip'
-                    )
-                } else {
-                    echo 'No test results found.'
-                }
+                emailext(
+                    subject: "Результаты тестов для ${currentBuild.number}",
+                    body: emailTemplate,
+                    to: 'your-email@example.com',
+                    attachmentsPattern: 'allure-report.zip'
+                )
             }
         }
     }
