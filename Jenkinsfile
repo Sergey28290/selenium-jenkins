@@ -51,25 +51,22 @@ pipeline {
 
                     def allureReportPath = "${WORKSPACE}\\allure-report.zip"
 
+                    def emailTemplate = readFile('email-template.html')
+
+                    emailTemplate = emailTemplate
+                        .replace('${BUILD_NUMBER}', "${currentBuild.number}")
+                        .replace('${ALL_TESTS}', "${allTests}")
+                        .replace('${PASSED_TESTS}', "${passedTests}")
+                        .replace('${FAILED_TESTS}', "${failedTests}")
+                        .replace('${SKIPPED_TESTS}', "${skippedTests}")
+                        .replace('${FAILED_TEST_SUMMARY}', "${failedTestSummary}")
+                        .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
+
                     emailext(
                         subject: "Результаты тестов для ${currentBuild.number}",
-                        body: """
-                            <html>
-                            <body>
-                              <h1>Результаты тестов для билда ${currentBuild.number}</h1>
-                              <p>Всего тестов: ${allTests}</p>
-                              <p>Пройденные тесты: ${passedTests}</p>
-                              <p>Проваленные тесты: ${failedTests}</p>
-                              <p>Пропущенные тесты: ${skippedTests}</p>
-                              <h2>Саммари по проваленным:</h2>
-                              <pre>${failedTestSummary}</pre>
-                              <h2>Отчет Allure:</h2>
-                              <p><a href="${allureReportPath}">Скачать Allure отчет</a></p>
-                            </body>
-                            </html>
-                        """,
+                        body: emailTemplate,
                         to: 'your-email@example.com',
-                        attachments: allureReportPath
+                        attachmentsPattern: 'allure-report.zip'
                     )
                 } else {
                     echo 'No test results found.'

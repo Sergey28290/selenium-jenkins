@@ -12,12 +12,14 @@ https://chromedriver.storage.googleapis.com/index.html?path=114.0.5735.90/
 
 также необходимо разрешить методы и настроить smtp сервер.
 
-Manage Jenkins -> Configure System, раздел Extended E-mail Notification.
+сначала нужно добавить credentials для smtp: Manage Jenkins -> Credentials
 
-в поле "SMTP server" введите адрес вашего SMTP-сервера (что-то вроде smtp.gmail.com)
-в поле "Default user e-mail suffix введите домен вашей электронной почты (@example.com).
-в поле "SMTP Authentication" выберите "Use SMTP Authentication".
-в поле "User Name" введите имя пользователя SMTP-сервера
-в поле "Password" введите пароль для вашего SMTP-сервера.
-в поле "Use SSL" установите флажок, если нужен ssl.
-в поле "SMTP Port" введите порт вашего SMTP-сервера
+![alt text](image.png)
+
+данные(логин, пароль) берем с smtp сервиса, который предоставил доступы. можно использовать brevo, mailtrap ...
+
+далее Manage Jenkins -> Configure System, раздел Extended E-mail Notification.
+
+заполнять все поля как в credentials, под вводом порта нажать advanced, там выбрать созданный объект credentials.
+
+отправку писем можно проверить в разделе ниже - email notification. заполнить все поля и нажать чекбокс Test configuration by sending test e-mail
