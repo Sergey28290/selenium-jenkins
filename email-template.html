@@ -1,0 +1,13 @@
+<html>
+<body>
+  <h1>Результаты тестов для билда ${BUILD_NUMBER}</h1>
+  <p>Всего тестов: ${ALL_TESTS}</p>
+  <p>Пройденные тесты: ${PASSED_TESTS}</p>
+  <p>Проваленные тесты: ${FAILED_TESTS}</p>
+  <p>Пропущенные тесты: ${SKIPPED_TESTS}</p>
+  <h2>Саммари по проваленным:</h2>
+  <pre>${FAILED_TEST_SUMMARY}</pre>
+  <h2>Отчет Allure:</h2>
+  <p><a href="${ALLURE_REPORT_LINK}">Скачать Allure отчет</a></p>
+</body>
+</html>
