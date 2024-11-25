@@ -54,10 +54,15 @@ pipeline {
         stage('Upload to Google Drive') {
             steps {
                 script {
-                    bat 'gdrive account switch equqee@gmail.com' //заменить на свой в gdrive account list
+                    bat 'echo %PATH%'
+                    bat 'echo %USERPROFILE%'
+
+                    bat 'gdrive account list'
+
+                    bat 'gdrive account switch equqee@gmail.com'
                     bat 'gdrive files upload --parent YOUR_FOLDER_ID allure-report.zip'
                     def fileId = bat(script: 'gdrive files list --query "name=\'allure-report.zip\'" --no-header', returnStdout: true).trim().split('\\s+')[0]
-                    def link = bat(script: "gdrive files info ${fileId} --fields webViewLink", returnStdout: true).trim().split('\\s+')[1]
+                    def link = bat(script: "gdrive files info \${fileId} --fields webViewLink", returnStdout: true).trim().split('\\s+')[1]
                     env.ALLURE_REPORT_LINK = link
                 }
             }
