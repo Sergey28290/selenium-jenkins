@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     powershell 'python -m venv venv'
-                    powershell '.\venv\Scripts\Activate.ps1'
+                    powershell '.\\venv\\Scripts\\Activate.ps1'
                     powershell 'pip install -r requirements.txt'
                     powershell "\$env:PATH += \";${CHROMEDRIVER_PATH}\""
                 }
