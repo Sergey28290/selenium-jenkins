@@ -9,17 +9,17 @@ pipeline {
         stage('Setup') {
             steps {
                 script {
-                    bat 'python -m venv venv'
-                    bat 'call venv\\Scripts\\activate'
-                    bat 'pip install -r requirements.txt'
-                    bat "set PATH=%PATH%;${CHROMEDRIVER_PATH}"
+                    powershell 'python -m venv venv'
+                    powershell '.\venv\Scripts\Activate.ps1'
+                    powershell 'pip install -r requirements.txt'
+                    powershell "\$env:PATH += \";${CHROMEDRIVER_PATH}\""
                 }
             }
         }
         stage('Test') {
             steps {
                 script {
-                    bat 'pytest --junitxml=test-reports/report.xml'
+                    powershell 'pytest --junitxml=test-reports/report.xml'
                 }
                 junit 'test-reports/report.xml'
             }
@@ -27,7 +27,7 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    bat 'allure generate allure-results -o allure-report'
+                    powershell 'allure generate allure-results -o allure-report'
                     powershell 'Compress-Archive -Path allure-report -DestinationPath allure-report.zip'
                 }
             }
