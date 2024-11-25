@@ -7,13 +7,6 @@ pipeline {
     }
 
     stages {
-        stage('Clean Workspace') {
-            steps {
-                script {
-                    deleteDir() // очистка воркспейса
-                }
-            }
-        }
         stage('Setup') {
             steps {
                 script {
