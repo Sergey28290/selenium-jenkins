@@ -78,7 +78,7 @@ pipeline {
                     to: recipients,
                     mimeType: 'text/html',
                     attachmentsPattern: 'allure-report.zip',
-                    from: 'MS_KK1T99@trial-3z0vklo1o9vg7qrx.mlsender.net'
+                    from: 'MS_0eccQb@trial-v69oxl5rprdg785k.mlsender.net'
                 )
             }
         }
