@@ -16,10 +16,12 @@ https://chromedriver.storage.googleapis.com/index.html?path=114.0.5735.90/
 
 ![alt text](image.png)
 
-данные(логин, пароль) берем с smtp сервиса, который предоставил доступы. можно использовать brevo, mailtrap ...
+данные(логин, пароль) берем с smtp сервиса, который предоставил доступы. можно использовать brevo, mailtrap ... от себя порекомендую использовать gmail smtp, быстро и просто. не все smtp сервисы дают нормально зарегистрироваться - можно сразу после регистрации по неизвестным причинам влететь под suspend
+
+хороший туториал для настройки и проверки gmail smtp: https://www.youtube.com/watch?v=ZfEK3WP73eY
 
 далее Manage Jenkins -> Configure System, раздел Extended E-mail Notification.
 
 заполнять все поля как в credentials, под вводом порта нажать advanced, там выбрать созданный объект credentials.
 
-отправку писем можно проверить в разделе ниже - email notification. заполнить все поля и нажать чекбокс Test configuration by sending test e-mail
+отправку писем от jenkins также можно проверить в разделе ниже - email notification. заполнить все поля и нажать чекбокс Test configuration by sending test e-mail
