@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     bat 'allure generate allure-results -o allure-report --clean'
-                    powershell 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -Command "Compress-Archive -Path allure-report -DestinationPath allure-report.zip"'
+                    powershell 'Compress-Archive -Path allure-report -DestinationPath allure-report.zip'
                 }
             }
         }
