@@ -7,6 +7,13 @@ pipeline {
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                script {
+                    deleteDir() // очистка воркспейса
+                }
+            }
+        }
         stage('Setup') {
             steps {
                 script {
@@ -20,7 +27,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    bat 'pytest --junitxml=test-reports/report.xml'
+                    bat 'pytest --alluredir=allure-results'
                 }
                 junit 'test-reports/report.xml'
                 script {
@@ -43,11 +50,13 @@ pipeline {
                 }
             }
         }
-        stage('Generate Allure Report') {
+        stage('Archive Allure Results and Report') {
             steps {
                 script {
-                    bat 'allure generate allure-results -o allure-report --clean'
-                    bat 'powershell -Command "Compress-Archive -Path allure-report -DestinationPath allure-report.zip -Force"'
+                    bat 'mkdir allure-archive'
+                    bat 'xcopy allure-results allure-archive\\allure-results /E /I'
+                    bat 'xcopy allure-report allure-archive\\allure-report /E /I'
+                    bat 'powershell -Command "Compress-Archive -Path allure-archive -DestinationPath allure-archive.zip -Force"'
                 }
             }
         }
@@ -56,7 +65,7 @@ pipeline {
                 script {
                     bat 'gdrive account list' //проверка аккаунтов
 
-                    def uploadOutput = bat(script: 'gdrive files upload --parent 1sMmJZTBiXjzrCXedl9Bzdgqk5Xk7V0q4 allure-report.zip', returnStdout: true).trim() //тут поменять айди папки
+                    def uploadOutput = bat(script: 'gdrive files upload --parent 1sMmJZTBiXjzrCXedl9Bzdgqk5Xk7V0q4 allure-archive.zip', returnStdout: true).trim() //тут поменять айди папки
                     echo "Upload Output: ${uploadOutput}"
                     def viewUrl = uploadOutput.split('\n').find { it.contains('ViewUrl') }.split(': ')[1]
                     env.ALLURE_REPORT_LINK = viewUrl
