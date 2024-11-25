@@ -28,7 +28,7 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 script {
-                    bat 'allure generate allure-results -o allure-report'
+                    bat 'allure generate allure-results -o allure-report --clean'
                     powershell 'Compress-Archive -Path allure-report -DestinationPath allure-report.zip'
                 }
             }
