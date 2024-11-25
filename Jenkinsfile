@@ -54,38 +54,39 @@ pipeline {
     }
 
     post {
-    always {
-        script {
-            def allureReportPath = "${WORKSPACE}\\allure-report.zip"
-            def config = readJSON file: 'recipients.json'
-            
-            def recipients = ''
-            config.recipients.each { recipient ->
-                if (recipients) {
-                    recipients += ",${recipient}"
-                } else {
-                    recipients = recipient
+        always {
+            script {
+                def allureReportPath = "${WORKSPACE}\\allure-report.zip"
+                def config = readJSON file: 'recipients.json'
+                
+                // Manually build the recipient string
+                def recipients = ''
+                config.recipients.each { recipient ->
+                    if (recipients) {
+                        recipients += ",${recipient}" // Add a comma if it's not the first recipient
+                    } else {
+                        recipients = recipient // Set the first recipient without a comma
+                    }
                 }
+
+                def emailTemplate = readFile('email-template.html')
+
+                emailTemplate = emailTemplate
+                    .replace('${BUILD_NUMBER}', "${currentBuild.number}")
+                    .replace('${ALL_TESTS}', "${env.ALL_TESTS}")
+                    .replace('${PASSED_TESTS}', "${env.PASSED_TESTS}")
+                    .replace('${FAILED_TESTS}', "${env.FAILED_TESTS}")
+                    .replace('${SKIPPED_TESTS}', "${env.SKIPPED_TESTS}")
+                    .replace('${FAILED_TEST_SUMMARY}', "${env.FAILED_TEST_SUMMARY}")
+                    .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
+
+                emailext(
+                    subject: "Результаты тестов для сборки ${currentBuild.number}",
+                    body: emailTemplate,
+                    to: recipients,
+                    attachmentsPattern: 'allure-report.zip'
+                )
             }
-
-            def emailTemplate = readFile('email-template.html')
-
-            emailTemplate = emailTemplate
-                .replace('${BUILD_NUMBER}', "${currentBuild.number}")
-                .replace('${ALL_TESTS}', "${env.ALL_TESTS}")
-                .replace('${PASSED_TESTS}', "${env.PASSED_TESTS}")
-                .replace('${FAILED_TESTS}', "${env.FAILED_TESTS}")
-                .replace('${SKIPPED_TESTS}', "${env.SKIPPED_TESTS}")
-                .replace('${FAILED_TEST_SUMMARY}', "${env.FAILED_TEST_SUMMARY}")
-                .replace('${ALLURE_REPORT_PATH}', "${allureReportPath}")
-
-            emailext(
-                subject: "Результаты тестов для сборки ${currentBuild.number}",
-                body: emailTemplate,
-                to: recipients,
-                attachmentsPattern: 'allure-report.zip'
-            )
         }
     }
 }
-
