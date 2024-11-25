@@ -56,9 +56,9 @@ pipeline {
     post {
         always {
             script {
-                def allureReportPath = "${WORKSPACE}\\allure-report.zip"
+                def allureReportPath = "${WORKSPACE}\\allure-report"
                 def config = readJSON file: 'recipients.json'
-                
+
                 def recipients = config.recipients.join(',')
 
                 def emailTemplate = readFile('email-template.html')
@@ -76,8 +76,7 @@ pipeline {
                     subject: "Результаты тестов для сборки ${currentBuild.number}",
                     body: emailTemplate,
                     to: recipients,
-                    attachmentsPattern: 'allure-report.zip',
-                    from: 'normalnyyadres@gmail.com'
+                    attachmentsPattern: 'allure-report/**/*.html'
                 )
             }
         }
