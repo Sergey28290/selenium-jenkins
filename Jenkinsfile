@@ -43,6 +43,13 @@ pipeline {
                 }
             }
         }
+        stage('Generate Allure Report') {
+            steps {
+                script {
+                    bat 'allure generate allure-results -o allure-report'
+                }
+            }
+        }
         stage('Archive Allure Results and Report') {
             steps {
                 script {

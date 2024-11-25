@@ -10,6 +10,8 @@ https://chromedriver.storage.googleapis.com/index.html?path=114.0.5735.90/
 
 в pipeline выбирайте pipeline script from scm, в выпадающем списке scm - git. далее заполнить форму с ссылкой на репозиторий(формата git clone), указать ветку test.
 
+# важный момент - в additional behaviours выберите clean before checkout
+
 также необходимо разрешить методы и настроить smtp сервер.
 
 сначала нужно добавить credentials для smtp: Manage Jenkins -> Credentials
