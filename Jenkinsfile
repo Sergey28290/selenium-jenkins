@@ -76,6 +76,7 @@ pipeline {
                     subject: "Результаты тестов для сборки ${currentBuild.number}",
                     body: emailTemplate,
                     to: recipients,
+                    mimeType: 'text/html',
                     attachmentsPattern: 'allure-report/**/*.html'
                 )
             }

@@ -25,3 +25,5 @@ https://chromedriver.storage.googleapis.com/index.html?path=114.0.5735.90/
 заполнять все поля как в credentials, под вводом порта нажать advanced, там выбрать созданный объект credentials.
 
 отправку писем от jenkins также можно проверить в разделе ниже - email notification. заполнить все поля и нажать чекбокс Test configuration by sending test e-mail
+
+получателей можно настроить в recipients.html
